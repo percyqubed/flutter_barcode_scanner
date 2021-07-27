@@ -524,13 +524,24 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     public void onBarcodeDetected(Barcode barcode) {
         if (null != barcode) {
             if (FlutterBarcodeScannerPlugin.isContinuousScan) {
-                FlutterBarcodeScannerPlugin.onBarcodeScanReceiver(barcode);
+                if (!isNotBarCode1D(barcode.rawValue)) {
+                    FlutterBarcodeScannerPlugin.onBarcodeScanReceiver(barcode);
+                }
             } else {
-                Intent data = new Intent();
-                data.putExtra(BarcodeObject, barcode);
-                setResult(CommonStatusCodes.SUCCESS, data);
-                finish();
+                if (!isNotBarCode1D(barcode.rawValue)) {
+                    Intent data = new Intent();
+                    data.putExtra(BarcodeObject, barcode);
+                    setResult(CommonStatusCodes.SUCCESS, data);
+                    finish();
+                }
             }
         }
+    }
+
+    /**
+     * Check if barcode rawValue has ANSI key
+     */
+    public static boolean isNotBarCode1D(String str) {
+        return !str.contains("ANSI");
     }
 }
